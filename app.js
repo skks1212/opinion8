@@ -40,6 +40,8 @@ app.use(
         cookie: {
             maxAge: 24 * 60 * 60 * 1000,
         },
+        resave: false,
+        saveUninitialized: false,
     })
 );
 
@@ -84,11 +86,11 @@ passport.use(
     )
 );
 
-passport.serializeAdmin((user, done) => {
+passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
-passport.deserializeAdmin((id, done) => {
+passport.deserializeUser((id, done) => {
     Admin.findByPk(id)
         .then((user) => {
             done(null, user);
