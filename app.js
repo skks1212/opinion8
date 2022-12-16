@@ -25,14 +25,17 @@ app.use(flash());
 
 app.use(express.static(path.join(__dirname, "public")));
 
-const liveReloadServer = livereload.createServer();
-liveReloadServer.server.once("connection", () => {
-    setTimeout(() => {
-        liveReloadServer.refresh("/");
-    }, 100);
-});
-
-app.use(connectLiveReload());
+if (process.env.DLR !== "true") {
+    const liveReloadServer = livereload.createServer();
+    liveReloadServer.server.once("connection", () => {
+        setTimeout(() => {
+            liveReloadServer.refresh("/");
+        }, 100);
+    });
+    app.use(connectLiveReload());
+} else {
+    console.log("Live reload is disabled");
+}
 
 app.use(
     session({
