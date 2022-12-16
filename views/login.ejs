@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('head.ejs', {title : "Login"}) %>
+</head>
+
+<body>
+    <%- include('header.ejs') %>
+    <div class="page flex justify-center items-center">
+        <div class="h-full flex items-center justify-center">
+            <div>
+                <h1 class="text-4xl font-black text-center">
+                    Login
+                </h1>
+                <form action="">
+                    <div class="flex flex-col gap-4 mt-4 w-[350px]">
+                        <div>
+                            <label for="email" class="text-lg font-bold">Email</label>
+                            <input type="email" name="email" id="email" class="">
+                        </div>
+                        <div>
+                            <label for="password" class="text-lg font-bold">Password</label>
+                            <input type="password" name="password" id="password" class="">
+                        </div>
+                        <div>
+                            <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg w-full text-xl font-bold">Login</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <%- include('footer.ejs') %>
+</body>
+<script>
+    tc.c("form input", "w-full border-2 border-stone-200 rounded-lg px-4 py-2 mt-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none text-xl font-bold")
+</script>
+<%- include('foot.ejs') %>
+</html>
