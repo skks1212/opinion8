@@ -13,12 +13,15 @@ module.exports = (sequelize, DataTypes) => {
                 as: "elections",
             });
         }
+
+        static createUser(userCreds) {
+            return this.create(userCreds);
+        }
     }
     Admin.init(
         {
             email: DataTypes.STRING,
             name: DataTypes.STRING,
-            username: DataTypes.STRING,
             password: DataTypes.STRING,
         },
         {

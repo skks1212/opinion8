@@ -17,6 +17,20 @@ module.exports = (sequelize, DataTypes) => {
                 as: "questions",
             });
         }
+
+        static getElections(adminId) {
+            try {
+                const elections = this.findAll({
+                    where: {
+                        adminId,
+                    },
+                });
+                return elections;
+            } catch (error) {
+                console.log(error);
+                return [];
+            }
+        }
     }
     Election.init(
         {

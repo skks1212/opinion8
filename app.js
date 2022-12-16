@@ -7,20 +7,26 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const livereload = require("livereload");
 const connectLiveReload = require("connect-livereload");
+const sqlite = require("better-sqlite3");
 
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const session = require("express-session");
-//const connectEnsureLogin = require("connect-ensure-login");
+const connectEnsureLogin = require("connect-ensure-login");
 const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
-//const saltRounds = 10;
+const csrfToken = process.env.CSRF_TOKEN || "this_should_be_32_character_long";
+const sessionKey =
+    process.env.SESSION_KEY || "my-super-secret-key-21728172615261562";
+
+const SqliteStore = require("better-sqlite3-session-store")(session);
+const db = new sqlite("sessions.db");
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("shh"));
-app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
+app.use(csrf(csrfToken, ["POST", "PUT", "DELETE"]));
 app.use(flash());
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -39,7 +45,14 @@ if (process.env.DLR !== "true") {
 
 app.use(
     session({
-        secret: "my-super-secret-key-21728172615261562",
+        store: new SqliteStore({
+            client: db,
+            expired: {
+                clear: true,
+                intervalMs: 900000,
+            },
+        }),
+        secret: sessionKey,
         cookie: {
             maxAge: 24 * 60 * 60 * 1000,
         },
@@ -67,7 +80,8 @@ passport.use(
                 .then(async (user) => {
                     if (!user) {
                         return done(null, false, {
-                            message: "Incorrect username.",
+                            message:
+                                "An Account with this email does not exist",
                         });
                     }
                     const result = await bcrypt.compare(
@@ -105,20 +119,14 @@ passport.deserializeUser((id, done) => {
 
 app.set("view engine", "ejs");
 
-app.get("/", (req, res) => {
-    // if (req.user && req.user.id) {
-    //     res.redirect("/todos");
-    // } else {
-    //     res.render("index", { csrfToken: req.csrfToken() });
-    // }
-    res.render("index", { csrfToken: req.csrfToken() });
-});
+require("./routes")(app, passport, connectEnsureLogin);
 
-app.get("/login", (request, response) => {
-    response.render("login", {
-        csrfToken: request.csrfToken(),
-        title: "Login",
-    });
+app.get("/", (req, res) => {
+    if (req.user && req.user.id) {
+        res.redirect("/elections");
+    } else {
+        res.render("index", { csrfToken: req.csrfToken() });
+    }
 });
 
 module.exports = app;
