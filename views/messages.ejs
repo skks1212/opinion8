@@ -1,7 +1,15 @@
-<% if(messages && messages.error && messages.error.length> 0) { %>
-    <% for(var i=0; i<messages.error.length; i++) { %>
-        <li>
-            <%= messages.error[i] %>
-        </li>
-    <% } %>
-<% } %>
+
+    <div class="bg-red-500/40 border-red-600 rounded-lg p-4 w-[1000px] inset-x-[calc(50vw-500px)] fixed <% if(messages && messages.error && messages.error.length> 0) { %> bottom-8 <% } else { %> -bottom-full <% } %> backdrop-blur transition-all" id="message">
+        <button class="absolute top-4 right-4" onclick="hideMessage()">
+            <i class="far fa-times"></i>
+        </button>
+        <ul id="message-list">
+            <% if(messages && messages.error && messages.error.length> 0) { %>
+            <% for(var i=0; i<messages.error.length; i++) { %>
+                <li>
+                    <%= messages.error[i] %>
+                </li>
+            <% } %>
+            <% } %>
+        </ul>
+    </div>

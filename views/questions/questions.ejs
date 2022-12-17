@@ -1,0 +1,15 @@
+<%= questions.length %> Questions
+<br>
+<br>
+<div class="">
+    <form action="/elections/<%= election.id %>/questions" method="post" class="flex items-center justify-between gap-4">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="text" name="question" placeholder="New Question" class="w-full">
+        <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg shrink-0 text-xl font-bold">Add Question</button>
+    </form>
+    <br>
+    <br>
+    <% for (let i = 0; i < questions.length; i++) { %>
+        <%- include('question.ejs', {question : questions[i], index: i}) %>
+    <% } %> 
+</div>

@@ -27,10 +27,12 @@
             </p>
         </div>
         <div class="flex items-center justify-end">
+            <% if (!elections[i].status || elections[i].status == 0) { %>
             <button class="text-semibold text-white hover:text-rose-600 text-sm" onclick="deleteElection(<%= elections[i].id %>, '<%= csrfToken %>')">
                 <i class="fal fa-trash"></i>
                 Delete
             </button>
+            <% } %>
         </div>
     </div>
     <% } %>

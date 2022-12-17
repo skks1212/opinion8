@@ -39,6 +39,18 @@ module.exports = (sequelize, DataTypes) => {
                         id,
                         adminId,
                     },
+                    include: [
+                        {
+                            model: sequelize.models.Question,
+                            as: "questions",
+                            include: [
+                                {
+                                    model: sequelize.models.Option,
+                                    as: "options",
+                                },
+                            ],
+                        },
+                    ],
                 });
                 return election;
             } catch (error) {
@@ -63,7 +75,17 @@ module.exports = (sequelize, DataTypes) => {
         static async updateElection(id, { name, status }, adminId) {
             const object = await this.getElection(id, adminId);
             if (object.status >= status) {
-                return null;
+                throw { errors: [{ message: "You cannot update status" }] };
+            }
+            if (status == 1 && object.questions.length === 0) {
+                throw {
+                    errors: [
+                        {
+                            message:
+                                "Please add questions to the election first",
+                        },
+                    ],
+                };
             }
             let additionalDate = {};
             if (status == 1) {
@@ -75,28 +97,30 @@ module.exports = (sequelize, DataTypes) => {
                     endDate: new Date(),
                 };
             }
-            try {
-                const election = await this.update(
-                    {
-                        name,
-                        status,
-                        ...additionalDate,
+
+            const election = await this.update(
+                {
+                    name,
+                    status,
+                    ...additionalDate,
+                },
+                {
+                    where: {
+                        id,
+                        adminId,
                     },
-                    {
-                        where: {
-                            id,
-                            adminId,
-                        },
-                    }
-                );
-                return election;
-            } catch (error) {
-                console.log(error);
-                return null;
-            }
+                }
+            );
+            return election;
         }
 
         static async deleteElection(id, adminId) {
+            const object = await this.getElection(id, adminId);
+            if (object.status >= 1) {
+                throw {
+                    errors: ["Cannot delete an election that has started"],
+                };
+            }
             try {
                 const election = await this.destroy({
                     where: {

@@ -1,0 +1,8 @@
+<form action="/elections/<%= election.id %>/questions" method="post" class="flex items-center justify-between gap-4">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div>
+        <%= index + 1 %>.
+    </div>
+    <input type="text" name="question" placeholder="New Question" class="w-full" value="<%= question.question %>">
+    <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg shrink-0 text-xl font-bold">Update</button>
+</form>

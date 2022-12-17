@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
     class Question extends Model {
         /**
@@ -16,6 +17,24 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "questionId",
                 as: "options",
             });
+        }
+
+        static createQuestion({ question, description }, electionId, adminId) {
+            const verify = sequelize.models.Election.findOne({
+                where: {
+                    id: electionId,
+                    adminId,
+                },
+            });
+            if (!verify) {
+                throw { errors: [{ message: "Election does not exist" }] };
+            }
+            const newQuestion = this.create({
+                question,
+                description,
+                electionId,
+            });
+            return newQuestion;
         }
     }
     Question.init(

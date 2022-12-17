@@ -37,12 +37,30 @@ module.exports = (app) => {
     app.patch("/elections/:id", ensureLoggedIn(), async (request, response) => {
         const { id } = request.params;
         const { name, status } = request.body;
-        await Election.updateElection(id, { name, status }, request.user.id);
+        try {
+            await Election.updateElection(
+                id,
+                { name, status },
+                request.user.id
+            );
 
-        if (request.accepts("json")) {
-            response.json({ success: true });
-        } else {
-            response.redirect(`/elections/${id}`);
+            if (request.accepts("json")) {
+                response.json({ success: true });
+            } else {
+                response.redirect(`/elections/${id}`);
+            }
+        } catch (error) {
+            console.log(error);
+            error.errors.forEach((element) => {
+                request.flash("error", element.message);
+            });
+            if (request.accepts("json")) {
+                response
+                    .status(400)
+                    .json({ success: false, errors: error.errors });
+            } else {
+                response.redirect(`/elections/${id}`);
+            }
         }
     });
 
@@ -50,12 +68,20 @@ module.exports = (app) => {
         "/elections/:id",
         ensureLoggedIn(),
         async (request, response) => {
-            const { id } = request.params;
-            await Election.deleteElection(id, request.user.id);
-            if (request.accepts("json")) {
-                response.json({ success: true });
-            } else {
-                response.redirect(`/elections/${id}`);
+            try {
+                const { id } = request.params;
+                await Election.deleteElection(id, request.user.id);
+                if (request.accepts("json")) {
+                    response.json({ success: true });
+                } else {
+                    response.redirect(`/elections/${id}`);
+                }
+            } catch (error) {
+                console.log(error);
+                error.errors.forEach((element) => {
+                    request.flash("error", element.message);
+                });
+                response.redirect("/todos");
             }
         }
     );
