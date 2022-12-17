@@ -8,9 +8,50 @@
 <body>
     <%- include('header.ejs') %>
     <div class="page">
-        <h1 class="text-4xl font-black">
-            My Elections
-        </h1>
+        <div class="flex items-center justify-between">
+            <h1 class="text-4xl font-black">
+                My Elections
+            </h1>
+            <form action="/elections" method="post">
+                <input type="hidden" name="name" value="My New Election">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="bg-rose-600 hover:bg-rose-700 px-3 py-2 rounded-lg text-black font-bold">
+                    <i class="fas fa-plus mr-1"></i>
+                    Create New Election
+                </button>
+            </form>
+            
+        </div>
+        <br>
+        <br>
+        <% if (ongoing.length > 0){ %>
+        <h2 class="text-2xl font-bold">
+            Ongoing Elections
+        </h2>
+        <div>
+            <%- include('electionlist.ejs', {elections: ongoing}) %>
+        </div>
+        <br>
+        <br>
+        <% } %>
+        <% if (upcoming.length > 0){ %>
+        <h2 class="text-2xl font-bold">
+            Upcoming Elections
+        </h2>
+        <div>
+            <%- include('electionlist.ejs', {elections: upcoming}) %>
+        </div>
+        <br>
+        <br>
+        <% } %>
+        <% if (past.length > 0){ %>
+        <h2 class="text-2xl font-bold">
+            Completed Elections
+        </h2>
+        <div>
+            <%- include('electionlist.ejs', {elections: past}) %>
+        </div>
+        <% } %>
     </div>
     <%- include('footer.ejs') %>
 </body>

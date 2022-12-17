@@ -20,9 +20,36 @@ module.exports = (sequelize, DataTypes) => {
     }
     Admin.init(
         {
-            email: DataTypes.STRING,
-            name: DataTypes.STRING,
-            password: DataTypes.STRING,
+            email: {
+                type: DataTypes.STRING,
+                unique: true,
+                allowNull: false,
+                isEmail: true,
+                validate: {
+                    isEmail: true,
+                    notNull: {
+                        msg: "Email is required",
+                    },
+                },
+            },
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Name is required",
+                    },
+                },
+            },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Password is required",
+                    },
+                },
+            },
         },
         {
             sequelize,

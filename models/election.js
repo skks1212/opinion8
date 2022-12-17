@@ -31,10 +31,100 @@ module.exports = (sequelize, DataTypes) => {
                 return [];
             }
         }
+
+        static getElection(id, adminId) {
+            try {
+                const election = this.findOne({
+                    where: {
+                        id,
+                        adminId,
+                    },
+                });
+                return election;
+            } catch (error) {
+                console.log(error);
+                return null;
+            }
+        }
+
+        static createElection(name, adminId) {
+            try {
+                const election = this.create({
+                    name,
+                    adminId,
+                });
+                return election;
+            } catch (error) {
+                console.log(error);
+                return null;
+            }
+        }
+
+        static async updateElection(id, { name, status }, adminId) {
+            const object = await this.getElection(id, adminId);
+            if (object.status >= status) {
+                return null;
+            }
+            let additionalDate = {};
+            if (status == 1) {
+                additionalDate = {
+                    startDate: new Date(),
+                };
+            } else if (status == 2) {
+                additionalDate = {
+                    endDate: new Date(),
+                };
+            }
+            try {
+                const election = await this.update(
+                    {
+                        name,
+                        status,
+                        ...additionalDate,
+                    },
+                    {
+                        where: {
+                            id,
+                            adminId,
+                        },
+                    }
+                );
+                return election;
+            } catch (error) {
+                console.log(error);
+                return null;
+            }
+        }
+
+        static async deleteElection(id, adminId) {
+            try {
+                const election = await this.destroy({
+                    where: {
+                        id,
+                        adminId,
+                    },
+                });
+                return election;
+            } catch (error) {
+                console.log(error);
+                return null;
+            }
+        }
     }
     Election.init(
         {
-            name: DataTypes.STRING,
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Name is required",
+                    },
+                    notEmpty: {
+                        msg: "Name is required",
+                    },
+                },
+            },
             status: DataTypes.INTEGER,
             startDate: DataTypes.DATE,
             endDate: DataTypes.DATE,

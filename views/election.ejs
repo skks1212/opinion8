@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('head.ejs') %>
+</head>
+
+<body>
+    <script>
+        const updateElection = (data) => {
+            fetch(`/elections/<%= election.id %>`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "_csrf": `<%= csrfToken %>`,
+                    ...data
+                })
+            }).then(res => {
+                if (res.status == 200) {
+                    location.reload()
+                }
+            })
+        }
+        const updateName = () => {
+            updateElection({
+                name: document.querySelector("input[name=name]").value
+            })
+        }
+    </script>
+    <%- include('header.ejs') %>
+    <div class="page">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-4xl font-black">
+                <%= election.name %>
+            </h1>
+            <% if (!election.status || election.status == 0) { %>
+            <button class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 1})">
+                <i class="far fa-flag-checkered mr-1"></i>
+                Start Election
+            </button>
+            <% } else if (election.status == 1) { %>
+            <button class="bg-rose-600 hover:bg-rose-700 px-3 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 2})">
+                <i class="far fa-hand mr-1"></i>
+                Stop Election
+            </button>
+            <% } %>
+        </div>
+        <% if (!election.status || election.status == 0) { %>
+        <h2 class="text-2xl font-bold">
+            Edit
+        </h2>
+        <br>
+        <div class="flex items-center justify-between gap-4">
+            <input type="text" name="name" value="<%= election.name %>">
+            <button class="shrink-0 input-button"onclick="updateName()">
+                Save
+            </button>
+        </div>
+        <br>
+        <br>
+        <% } else { %>
+            <div class="h-[300px] justify-center items-center flex flex-col gap-4">
+            <% if (election.status == 1) { %>
+                <h3 class="text-2xl text-green-500">
+                    <i class="fas fa-circle fa-fade"></i>
+                    Election is in progress
+                </h3>
+            <% } else if (election.status == 2) { %>
+                <h3 class="text-2xl text-rose-500">
+                    Election is over
+                </h3>
+            <% } %>
+            <!--<button class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 1})">
+                <i class="far fa-flag-checkered mr-1"></i>
+                View Results
+            </button>-->
+            </div>
+        <% } %>
+        <% if (!election.status || election.status == 0) { %>
+        <h2 class="text-2xl font-bold">
+            Ballot
+        </h2>
+        <% } else { %>
+        <h2 class="text-2xl font-bold">
+            Results
+        </h2>
+        <% } %>
+    </div>
+    <%- include('footer.ejs') %>
+</body>
+<script>
+    tc.c(".input-button", "bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg text-xl font-bold")
+    tc.c("input", "w-full border-2 border-stone-200 rounded-lg px-4 py-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none text-xl font-bold")
+</script>
+<%- include('foot.ejs') %>
+</html>

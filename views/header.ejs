@@ -11,9 +11,17 @@
             </a>
         </div>
         <nav class="flex items-center gap-4">
-            <a href="/">Home</a></li>
-            <a href="/login">Login</a></li>
-            <a href="/register" class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-2 py-1 rounded-lg">Register</a></li>
+            <a href="/">Home</a>
+            <% if (typeof user == "undefined") { %>
+            <a href="/login">Login</a>
+            <a href="/register" class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-2 py-1 rounded-lg">Register</a>
+            <% } else { %>
+            <a href="/profile">
+                <i class="far fa-user-circle"></i>
+                <%= user.name %>
+            </a>
+            <a href="/logout">Logout</a>
+            <% } %>
         </nav>
     </div>
 </header>

@@ -17,8 +17,27 @@ module.exports = (sequelize, DataTypes) => {
     }
     Voter.init(
         {
-            email: DataTypes.STRING,
-            password: DataTypes.STRING,
+            email: {
+                type: DataTypes.STRING,
+                unique: true,
+                allowNull: false,
+                isEmail: true,
+                validate: {
+                    isEmail: true,
+                    notNull: {
+                        msg: "Email is required",
+                    },
+                },
+            },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Password is required",
+                    },
+                },
+            },
         },
         {
             sequelize,

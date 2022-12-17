@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { Admin } = require("../models");
+const { Admin } = require("../../models");
 module.exports = function (app, passport) {
     const saltRounds = 10;
 
@@ -52,5 +52,15 @@ module.exports = function (app, passport) {
             });
             response.redirect("register");
         }
+    });
+
+    app.get("/logout", (request, response) => {
+        request.logout((err) => {
+            if (err) {
+                /* eslint-disable no-undef */
+                return next(err);
+            }
+            response.redirect("/");
+        });
     });
 };

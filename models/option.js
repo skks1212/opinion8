@@ -16,7 +16,15 @@ module.exports = (sequelize, DataTypes) => {
     }
     Option.init(
         {
-            option: DataTypes.STRING,
+            option: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Option is required",
+                    },
+                },
+            },
         },
         {
             sequelize,

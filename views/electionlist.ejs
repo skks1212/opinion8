@@ -1,0 +1,37 @@
+<div class="grid grid-cols-3 mt-8 gap-4">
+    <% for (let i = 0; i < elections.length; i++){ %>
+    <% let color = "stone-300"; 
+    if (elections[i].status == 1) {
+        color = "green-600";
+    } else if (elections[i].status == 2) {
+        color = "rose-600";
+    } %>
+    <div class="border border-stone-800 hover:border-rose-600 transition rounded-xl p-4 flex flex-col justify-between border-t-4 border-t-<%= color %>/60">
+        <div>
+            <div class="h-10 w-10 rounded-full bg-<%= color %>/40 text-<%= color %> inline-flex items-center justify-center">
+                <i class="fas fa-ballot-check text-xl"></i>
+            </div>
+            <br>
+            <h2 class="text-xl font-bold mt-2">
+                <a href="/elections/<%= elections[i].id %>" class="hover:text-rose-600 transition"><%= elections[i].name %></a>
+            </h2>
+            <p class="text-sm text-stone-300">
+
+                <% if (elections[i].status > 0) { %>
+                Started : <%= moment(elections[i].startDate).format("Do MMMM, YYYY") %>
+                <% } %>
+                <br>
+                <% if (elections[i].status == 2) { %>
+                Ended : <%= moment(elections[i].endDate).format("Do MMMM, YYYY") %>
+                <% } %>
+            </p>
+        </div>
+        <div class="flex items-center justify-end">
+            <button class="text-semibold text-white hover:text-rose-600 text-sm" onclick="deleteElection(<%= elections[i].id %>, '<%= csrfToken %>')">
+                <i class="fal fa-trash"></i>
+                Delete
+            </button>
+        </div>
+    </div>
+    <% } %>
+</div>
