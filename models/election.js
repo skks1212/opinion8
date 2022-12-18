@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "electionId",
                 as: "questions",
             });
+            Election.hasMany(models.Voter, {
+                foreignKey: "electionId",
+                as: "voters",
+            });
         }
 
         static getElections(adminId) {
@@ -43,12 +47,19 @@ module.exports = (sequelize, DataTypes) => {
                         {
                             model: sequelize.models.Question,
                             as: "questions",
+                            order: [["createdAt", "ASC"]],
                             include: [
                                 {
                                     model: sequelize.models.Option,
                                     as: "options",
+                                    order: [["createdAt", "ASC"]],
                                 },
                             ],
+                        },
+                        {
+                            model: sequelize.models.Voter,
+                            as: "voters",
+                            order: [["createdAt", "ASC"]],
                         },
                     ],
                 });
@@ -83,6 +94,15 @@ module.exports = (sequelize, DataTypes) => {
                         {
                             message:
                                 "Please add questions to the election first",
+                        },
+                    ],
+                };
+            } else if (status == 1 && object.voters.length === 0) {
+                throw {
+                    errors: [
+                        {
+                            message:
+                                "Please add atleast one voter to the election first",
                         },
                     ],
                 };

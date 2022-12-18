@@ -1,4 +1,4 @@
-const { Question } = require("../../models");
+const { Question, Option } = require("../../models");
 const ensureLoggedIn = require("../utils/ensureLoggedIn");
 module.exports = (app) => {
     app.post(
@@ -7,11 +7,17 @@ module.exports = (app) => {
         async (request, response) => {
             const { id } = request.params;
             const { question, description } = request.body;
-            await Question.createQuestion(
-                { question, description },
-                id,
-                request.user.id
-            );
+            try {
+                await Question.createQuestion(
+                    { question, description },
+                    id,
+                    request.user.id
+                );
+            } catch (error) {
+                error.errors?.forEach((element) => {
+                    request.flash("error", element.message);
+                });
+            }
             response.redirect(`/elections/${id}`);
         }
     );
@@ -64,11 +70,19 @@ module.exports = (app) => {
         async (request, response) => {
             const { id, questionId } = request.params;
             const { option } = request.body;
-            await Question.createOption(
-                { option },
-                questionId,
-                request.user.id
-            );
+            try {
+                const op = await Option.createOption(
+                    { option },
+                    questionId,
+                    request.user.id
+                );
+                console.log("------------- ", op);
+            } catch (error) {
+                error.errors?.forEach((element) => {
+                    request.flash("error", element.message);
+                });
+                console.log(error);
+            }
             response.redirect(`/elections/${id}`);
         }
     );
@@ -79,7 +93,7 @@ module.exports = (app) => {
             const { optionId } = request.params;
             const { option } = request.body;
             try {
-                const o = await Question.updateOption(
+                const o = await Option.updateOption(
                     { option },
                     optionId,
                     request.user.id
@@ -98,11 +112,11 @@ module.exports = (app) => {
         async (request, response) => {
             const { id, optionId } = request.params;
             try {
-                await Question.deleteOption(optionId, request.user.id);
+                await Option.deleteOption(optionId, request.user.id);
                 response.json({ success: true });
             } catch (error) {
                 console.log(error);
-                error.errors.forEach((element) => {
+                error.errors?.forEach((element) => {
                     request.flash("error", element.message);
                 });
                 if (request.accepts("json")) {

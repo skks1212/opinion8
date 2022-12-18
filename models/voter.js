@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Voter extends Model {
         /**
@@ -8,24 +8,86 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            Voter.belongsToMany(models.Election, {
-                through: "VoterElection",
-                foreignKey: "voterId",
-                as: "elections",
+            Voter.belongsTo(models.Election, {
+                foreignKey: "electionId",
+                as: "election",
             });
+        }
+
+        static async createVoter({ voterId, password }, electionId, adminId) {
+            const verify = await sequelize.models.Election.findOne({
+                where: {
+                    id: electionId,
+                    adminId,
+                    [Op.or]: [{ status: null }, { status: 1 }],
+                },
+            });
+            if (!verify) {
+                throw { errors: [{ message: "Election does not exist" }] };
+            }
+            const newVoter = await this.create({
+                voterId,
+                password,
+                electionId,
+            });
+            return newVoter;
+        }
+        static async updateVoter({ voterId, password }, vId, adminId) {
+            const updatedVoter = await this.update(
+                {
+                    voterId,
+                    password,
+                },
+                {
+                    where: {
+                        id: vId,
+                    },
+                    include: [
+                        {
+                            model: sequelize.models.Election,
+                            as: "elections",
+                            where: {
+                                adminId,
+                                [Op.or]: [{ status: null }, { status: 1 }],
+                            },
+                        },
+                    ],
+                }
+            );
+            return updatedVoter;
+        }
+        static async deleteVoter(voterId, adminId) {
+            const deletedVoter = await this.destroy({
+                where: {
+                    id: voterId,
+                },
+                include: [
+                    {
+                        model: sequelize.models.Election,
+                        as: "elections",
+                        where: {
+                            adminId,
+                            [Op.or]: [{ status: null }, { status: 1 }],
+                        },
+                    },
+                ],
+            });
+            return deletedVoter;
         }
     }
     Voter.init(
         {
-            email: {
+            voterId: {
                 type: DataTypes.STRING,
-                unique: true,
                 allowNull: false,
-                isEmail: true,
+                unique: true,
+                notEmpty: true,
                 validate: {
-                    isEmail: true,
                     notNull: {
-                        msg: "Email is required",
+                        msg: "Voter ID is required",
+                    },
+                    notEmpty: {
+                        msg: "Voter ID is required",
                     },
                 },
             },
@@ -34,6 +96,9 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 validate: {
                     notNull: {
+                        msg: "Password is required",
+                    },
+                    notEmpty: {
                         msg: "Password is required",
                     },
                 },

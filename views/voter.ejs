@@ -1,0 +1,9 @@
+<form action="/elections/<%= election.id %>/voters/<%= voter.id %>" class="flex items-center gap-2 mb-4" method="post">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="text" name="voterId" placeholder="Voter ID" value="<%= voter.voterId %>">
+    <input type="text" name="password" placeholder="Password" value="<%= voter.password %>">
+    <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg shrink-0 text-xl font-bold">Update</button>
+    <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 text-xl font-bold" onclick="deleteVoter(`<%= voter.id %>`)">
+        <i class="far fa-trash-alt"></i>
+    </button>
+</form>

@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Option extends Model {
         /**
@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Option.belongsTo(models.Question, {
                 foreignKey: "questionId",
+                as: "question",
                 onDelete: "CASCADE",
             });
         }
@@ -25,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
                         as: "election",
                         where: {
                             adminId,
+                            [Op.or]: [{ status: null }, { status: 1 }],
                         },
                     },
                 ],
@@ -36,22 +38,33 @@ module.exports = (sequelize, DataTypes) => {
                 option,
                 questionId,
             });
+            console.log(newOption);
             return newOption;
         }
 
         static async updateOption({ option }, optionId, adminId) {
-            const verify = await sequelize.models.Question.findOne({
+            const verify = await this.findOne({
                 where: {
-                    id: this.questionId,
+                    id: optionId,
                 },
                 include: [
                     {
-                        model: sequelize.models.Election,
-                        as: "election",
+                        model: sequelize.models.Question,
+                        as: "question",
+                        include: [
+                            {
+                                model: sequelize.models.Election,
+                                as: "election",
+                                where: {
+                                    adminId,
+                                    [Op.or]: [{ status: null }, { status: 1 }],
+                                },
+                            },
+                        ],
                     },
                 ],
-            }).election.adminId;
-            if (verify !== adminId) {
+            });
+            if (!verify) {
                 throw { errors: [{ message: "Question does not exist" }] };
             }
             const updatedOption = await this.update(
@@ -68,25 +81,36 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         static async deleteOption(optionId, adminId) {
-            const verify = await sequelize.models.Question.findAll({
+            const verify = await this.findOne({
                 where: {
-                    id: this.questionId,
+                    id: optionId,
                 },
                 include: [
                     {
-                        model: sequelize.models.Election,
-                        as: "election",
+                        model: sequelize.models.Question,
+                        as: "question",
+                        include: [
+                            {
+                                model: sequelize.models.Election,
+                                as: "election",
+                                where: {
+                                    adminId,
+                                    [Op.or]: [{ status: null }, { status: 1 }],
+                                },
+                            },
+                        ],
                     },
                 ],
             });
-
-            if (
-                verify.find((q) => q.id === optionId).election.adminId !==
-                adminId
-            ) {
+            if (!verify) {
                 throw { errors: [{ message: "Question does not exist" }] };
             }
-            if (verify.length < 2) {
+            const totalOptions = await this.count({
+                where: {
+                    questionId: verify.questionId,
+                },
+            });
+            if (totalOptions < 2) {
                 throw {
                     errors: [
                         { message: "Question must have at least 1 option" },
@@ -106,8 +130,12 @@ module.exports = (sequelize, DataTypes) => {
             option: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                notEmpty: true,
                 validate: {
                     notNull: {
+                        msg: "Option is required",
+                    },
+                    notEmpty: {
                         msg: "Option is required",
                     },
                 },

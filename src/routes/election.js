@@ -7,7 +7,6 @@ module.exports = (app) => {
         const ongoing = myElections.filter((e) => e.status == 1);
         const upcoming = myElections.filter((e) => e.status == 0 || !e.status);
         const past = myElections.filter((e) => e.status == 2);
-        console.log(myElections.map((e) => e.startDate));
         response.render("elections", {
             title: "My Elections",
             csrfToken: request.csrfToken(),

@@ -20,12 +20,56 @@
                 const json = await res.json();
                 showMessage(json.errors, 'error');
             }else{
-                showMessage([{ message : 'Question updated'}], 'success');
+                location.reload();
+                //showMessage([{ message : 'Question updated'}], 'success');
             }
         });
     }
     const deleteQuestion = (questionId) => {
         const url = `/elections/<%= election.id %>/questions/${questionId}`;
+        const data = {
+            _csrf: '<%= csrfToken %>'
+        };
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(async res => {
+            if (res.status !== 200) {
+                const json = await res.json();
+                showMessage(json.errors, 'error');
+            } else {
+                location.reload();
+            }
+        });
+    }
+    const updateOption = (questionId, optionId) => {
+        const option = document.getElementById(`option_${optionId}`).value;
+        const url = `/elections/<%= election.id %>/questions/${questionId}/options/${optionId}`;
+        const data = {
+            _csrf: '<%= csrfToken %>',
+            option
+        };
+        fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(async res => {
+            if (res.status !== 200) {
+                const json = await res.json();
+                showMessage(json.errors, 'error');
+            }else{
+                location.reload();
+                //showMessage([{ message : 'Option updated'}], 'success');
+            }
+        });
+    }
+    const deleteOption = (questionId, optionId) => {
+        const url = `/elections/<%= election.id %>/questions/${questionId}/options/${optionId}`;
         const data = {
             _csrf: '<%= csrfToken %>'
         };
