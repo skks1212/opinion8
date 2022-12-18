@@ -22,14 +22,31 @@ const hideMessage = () => {
     message.classList.remove("bottom-8");
     message.classList.add("-bottom-full");
 };
-const handleMessages = (messages) => {
+const showMessage = (messages, type) => {
+    const errorClasses = ["bg-red-500/40", "border-red-600"];
+    const successClasses = ["bg-green-500/40", "border-green-600"];
     const message = document.getElementById("message");
+    if (type === "success") {
+        successClasses.forEach((className) => {
+            message.classList.add(className);
+        });
+        errorClasses.forEach((className) => {
+            message.classList.remove(className);
+        });
+    } else {
+        errorClasses.forEach((className) => {
+            message.classList.add(className);
+        });
+        successClasses.forEach((className) => {
+            message.classList.remove(className);
+        });
+    }
     message.classList.add("bottom-8");
     message.classList.remove("-bottom-full");
     const messageList = document.getElementById("message-list");
     messageList.innerHTML = "";
     console.log(messages);
-    messages.errors.forEach((message) => {
+    messages.forEach((message) => {
         const li = document.createElement("li");
         li.innerText = message.message;
         messageList.appendChild(li);

@@ -81,7 +81,7 @@ module.exports = (app) => {
                 error.errors.forEach((element) => {
                     request.flash("error", element.message);
                 });
-                response.redirect("/todos");
+                response.redirect("/");
             }
         }
     );

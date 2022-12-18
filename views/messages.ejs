@@ -1,5 +1,17 @@
-
-    <div class="bg-red-500/40 border-red-600 rounded-lg p-4 w-[1000px] inset-x-[calc(50vw-500px)] fixed <% if(messages && messages.error && messages.error.length> 0) { %> bottom-8 <% } else { %> -bottom-full <% } %> backdrop-blur transition-all" id="message">
+<% if(messages && messages.error && messages.error.length> 0) { %>
+    <script>
+        let preMessages = `<%- JSON.stringify(messages.error) %>`;
+        preMessages = JSON.parse(preMessages);
+        preMessages = preMessages.map(message => {
+            return { message };
+        });
+        window.onload = () => {
+            showMessage(preMessages, 'error');
+        }
+    </script>
+<% } %>
+     
+    <div class="rounded-lg p-4 w-[1000px] inset-x-[calc(50vw-500px)] fixed -bottom-full backdrop-blur transition-all" id="message">
         <button class="absolute top-4 right-4" onclick="hideMessage()">
             <i class="far fa-times"></i>
         </button>

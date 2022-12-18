@@ -1,3 +1,51 @@
+
+<script>
+    const updateQuestion = (questionId) => {
+        const question = document.getElementById(`question_${questionId}`).value;
+        const description = document.getElementById(`description_${questionId}`).value;
+        const url = `/elections/<%= election.id %>/questions/${questionId}`;
+        const data = {
+            _csrf: '<%= csrfToken %>',
+            question,
+            description
+        };
+        fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(async res => {
+            if (res.status !== 200) {
+                const json = await res.json();
+                showMessage(json.errors, 'error');
+            }else{
+                showMessage([{ message : 'Question updated'}], 'success');
+            }
+        });
+    }
+    const deleteQuestion = (questionId) => {
+        const url = `/elections/<%= election.id %>/questions/${questionId}`;
+        const data = {
+            _csrf: '<%= csrfToken %>'
+        };
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(async res => {
+            if (res.status !== 200) {
+                const json = await res.json();
+                showMessage(json.errors, 'error');
+            } else {
+                location.reload();
+            }
+        });
+    }
+</script>
+
 <%= questions.length %> Questions
 <br>
 <br>

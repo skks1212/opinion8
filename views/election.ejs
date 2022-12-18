@@ -22,7 +22,7 @@
                     location.reload()
                 }else{
                     const json = await res.json();
-                    handleMessages(json);
+                    showMessage(json.errors, 'error');
                 }
             })
         }

@@ -14,15 +14,26 @@ module.exports = (sequelize, DataTypes) => {
             });
         }
 
-        static createUser(userCreds) {
-            return this.create(userCreds);
+        static async createUser(userCreds) {
+            const verify = await this.findOne({
+                where: {
+                    email: userCreds.email,
+                },
+            });
+            if (verify) {
+                throw { errors: [{ message: "Email is already taken" }] };
+            }
+            return await this.create(userCreds);
         }
     }
     Admin.init(
         {
             email: {
                 type: DataTypes.STRING,
-                unique: true,
+                unique: {
+                    args: "email",
+                    msg: "The email is already taken!",
+                },
                 allowNull: false,
                 isEmail: true,
                 validate: {

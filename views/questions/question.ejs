@@ -1,8 +1,35 @@
-<form action="/elections/<%= election.id %>/questions" method="post" class="flex items-center justify-between gap-4">
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <div>
-        <%= index + 1 %>.
+<div class="mt-4">
+    <div class="flex items-start justify-between gap-2 ">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div>
+            <%= index + 1 %>.
+        </div>
+        <div class="w-full">
+            <input type="text" name="question" placeholder="New Question" class="w-full" id="question_<%= question.id %>" value="<%= question.question %>">
+            <textarea class="block w-full border-2 border-stone-200 rounded-lg px-4 py-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none mt-2" placeholder="Description" name="description" id="description_<%= question.id %>"><%= question.description %></textarea>
+        </div>
+        <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg shrink-0 text-xl font-bold" onclick="updateQuestion(`<%= question.id %>`)">
+            <i class="far fa-save"></i>
+        </button>
+        <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 text-xl font-bold" onclick="deleteQuestion(`<%= question.id %>`)">
+            <i class="far fa-trash-alt"></i>
+        </button>
     </div>
-    <input type="text" name="question" placeholder="New Question" class="w-full" value="<%= question.question %>">
-    <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg shrink-0 text-xl font-bold">Update</button>
-</form>
+    <div>
+        <div class="flex items-start justify-between gap-2 mt-4">
+            <div>
+                <input type="text" name="option" placeholder="New Option" class="w-full" id="option_<%= question.id %>">
+            </div>
+            <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg shrink-0 text-xl font-bold" onclick="addOption(`<%= question.id %>`)">
+                <i class="far fa-plus"></i>
+            </button>
+        </div>
+        <div class="mt-4">
+            <% question.options.forEach((option, index) => { %>
+                <div class="flex items">
+
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</div>

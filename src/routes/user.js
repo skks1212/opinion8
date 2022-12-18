@@ -29,11 +29,16 @@ module.exports = function (app, passport) {
     );
 
     app.post("/register", async (request, response) => {
-        const { name, email, password } = request.body;
+        const { name, email, password, password2 } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         try {
+            if (password !== password2) {
+                request.flash("error", "Passwords do not match");
+                response.redirect("register");
+                return;
+            }
             const user = await Admin.createUser({
                 name,
                 email,
