@@ -15,15 +15,39 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         static async createVoter({ voterId, password }, electionId, adminId) {
-            const verify = await sequelize.models.Election.findOne({
+            const election = await sequelize.models.Election.findByPk(
+                electionId,
+                {
+                    include: [
+                        {
+                            model: sequelize.models.Admin,
+                            where: { id: adminId },
+                        },
+                    ],
+                }
+            );
+            if (!election) {
+                throw {
+                    errors: [
+                        { message: `Election with id ${electionId} not found` },
+                    ],
+                };
+            }
+
+            if (election.status !== 0 && election.status !== null) {
+                throw {
+                    errors: [{ message: "Election is in progress / ended" }],
+                };
+            }
+
+            const voterWithSameName = await Voter.findOne({
                 where: {
-                    id: electionId,
-                    adminId,
-                    [Op.or]: [{ status: null }, { status: 1 }],
+                    voterId,
+                    electionId: electionId,
                 },
             });
-            if (!verify) {
-                throw { errors: [{ message: "Election does not exist" }] };
+            if (voterWithSameName) {
+                throw { errors: [{ message: "Voter ID already exists" }] };
             }
             const newVoter = await this.create({
                 voterId,
@@ -32,30 +56,58 @@ module.exports = (sequelize, DataTypes) => {
             });
             return newVoter;
         }
-        static async updateVoter({ voterId, password }, vId, adminId) {
-            const updatedVoter = await this.update(
+
+        static async updateVoter({ voterId, password }, id, adminId) {
+            const existingVoter = await Voter.findByPk(id);
+            if (!existingVoter) {
+                throw {
+                    errors: [{ message: `Voter with id ${id} not found` }],
+                };
+            }
+
+            const election = await sequelize.models.Election.findByPk(
+                existingVoter.electionId,
                 {
-                    voterId,
-                    password,
-                },
-                {
-                    where: {
-                        id: vId,
-                    },
                     include: [
                         {
-                            model: sequelize.models.Election,
-                            as: "elections",
-                            where: {
-                                adminId,
-                                [Op.or]: [{ status: null }, { status: 1 }],
-                            },
+                            model: sequelize.models.Admin,
+                            where: { id: adminId },
                         },
                     ],
                 }
             );
-            return updatedVoter;
+            if (!election) {
+                throw {
+                    errors: [
+                        {
+                            message: `Election with id ${existingVoter.electionId} not found`,
+                        },
+                    ],
+                };
+            }
+
+            if (election.status !== 0 && election.status !== null) {
+                throw {
+                    errors: [{ message: "Election is in progress / ended" }],
+                };
+            }
+
+            const voterWithSameName = await Voter.findOne({
+                where: {
+                    voterId,
+                    electionId: existingVoter.electionId,
+                },
+            });
+            if (voterWithSameName && voterWithSameName.id !== id) {
+                throw { errors: [{ message: "Voter ID already exists" }] };
+            }
+
+            return await existingVoter.update({
+                voterId,
+                password,
+            });
         }
+
         static async deleteVoter(voterId, adminId) {
             const deletedVoter = await this.destroy({
                 where: {
@@ -80,7 +132,6 @@ module.exports = (sequelize, DataTypes) => {
             voterId: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true,
                 notEmpty: true,
                 validate: {
                     notNull: {

@@ -26,9 +26,10 @@
                 }
             })
         }
-        const updateName = () => {
+        const updateElectionDeets = () => {
             updateElection({
-                name: document.querySelector("input[name=name]").value
+                name: document.querySelector("input[name=name]").value,
+                customUrl: document.querySelector("input[name=customUrl]").value
             })
         }
     </script>
@@ -38,26 +39,36 @@
             <h1 class="text-4xl font-black">
                 <%= election.name %>
             </h1>
-            <% if (!election.status || election.status == 0) { %>
-            <button class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 1})">
-                <i class="far fa-flag-checkered mr-1"></i>
-                Start Election
-            </button>
-            <% } else if (election.status == 1) { %>
-            <button class="bg-rose-600 hover:bg-rose-700 px-3 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 2})">
-                <i class="far fa-hand mr-1"></i>
-                Stop Election
-            </button>
-            <% } %>
+            <div>
+                <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 font-bold" onclick="copyToClipboard('https:\/\/opinion8.shivankacker.me/<%= election.customUrl || election.id %>')">
+                    <i class="far fa-copy mr-1"></i>
+                    Copy election link
+                </button>
+                <% if (!election.status || election.status == 0) { %>
+                    <button class="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 1})">
+                        <i class="far fa-flag-checkered mr-1"></i>
+                        Start Election
+                    </button>
+                    <% } else if (election.status == 1) { %>
+                    <button class="bg-rose-600 hover:bg-rose-700 px-5 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 2})">
+                        <i class="far fa-hand mr-1"></i>
+                        Stop Election
+                    </button>
+                <% } %>
+            </div>
         </div>
         <% if (!election.status || election.status == 0) { %>
         <h2 class="text-2xl font-bold">
             Edit
         </h2>
         <br>
-        <div class="flex items-center justify-between gap-4">
-            <input type="text" name="name" value="<%= election.name %>" placeholder="Election Name">
-            <button class="shrink-0 input-button"onclick="updateName()">
+        <div class="flex justify-between gap-4">
+            <div class="w-full">
+                <input type="text" name="name" value="<%= election.name %>" placeholder="Election Name">
+                <input type="text" name="customUrl" value="<%= election.customUrl %>" placeholder="Custom Url (ex. my-election)" class="mt-2">
+            </div>
+            
+            <button class="shrink-0 input-button"onclick="updateElectionDeets()">
                 Save
             </button>
         </div>

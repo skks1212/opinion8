@@ -83,10 +83,13 @@ module.exports = (sequelize, DataTypes) => {
             }
         }
 
-        static async updateElection(id, { name, status }, adminId) {
+        static async updateElection(id, { name, status, customUrl }, adminId) {
             const object = await this.getElection(id, adminId);
             if (object.status >= status) {
                 throw { errors: [{ message: "You cannot update status" }] };
+            }
+            if (customUrl === "") {
+                customUrl = null;
             }
             if (status == 1 && object.questions.length === 0) {
                 throw {
@@ -122,6 +125,7 @@ module.exports = (sequelize, DataTypes) => {
                 {
                     name,
                     status,
+                    customUrl,
                     ...additionalDate,
                 },
                 {
@@ -138,7 +142,12 @@ module.exports = (sequelize, DataTypes) => {
             const object = await this.getElection(id, adminId);
             if (object.status >= 1) {
                 throw {
-                    errors: ["Cannot delete an election that has started"],
+                    errors: [
+                        {
+                            message:
+                                "Cannot delete an election that has started",
+                        },
+                    ],
                 };
             }
             try {
@@ -166,6 +175,20 @@ module.exports = (sequelize, DataTypes) => {
                     },
                     notEmpty: {
                         msg: "Name is required",
+                    },
+                },
+            },
+            customUrl: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                unique: {
+                    args: true,
+                    msg: "Custom URL has already been taken",
+                },
+                validate: {
+                    is: {
+                        args: /^[a-zA-Z0-9-]+$/,
+                        msg: "Custom URL can only contain letters, numbers and hyphens",
                     },
                 },
             },

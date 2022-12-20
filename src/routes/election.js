@@ -1,5 +1,6 @@
 const { Election } = require("../../models");
 const ensureLoggedIn = require("../utils/ensureLoggedIn");
+const { usedRoutes } = require("../utils/urls");
 
 module.exports = (app) => {
     app.get("/elections", ensureLoggedIn(), async (request, response) => {
@@ -35,14 +36,19 @@ module.exports = (app) => {
 
     app.patch("/elections/:id", ensureLoggedIn(), async (request, response) => {
         const { id } = request.params;
-        const { name, status } = request.body;
+        const { name, status, customUrl } = request.body;
+        const usedR = usedRoutes(app);
         try {
+            if (customUrl && usedR.includes(customUrl)) {
+                throw {
+                    errors: [{ message: "Custom URL has already been taken" }],
+                };
+            }
             await Election.updateElection(
                 id,
-                { name, status },
+                { name, status, customUrl },
                 request.user.id
             );
-
             if (request.accepts("json")) {
                 response.json({ success: true });
             } else {
