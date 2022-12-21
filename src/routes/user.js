@@ -19,7 +19,7 @@ module.exports = function (app, passport) {
 
     app.post(
         "/login",
-        passport.authenticate("local", {
+        passport.authenticate("AdminLocal", {
             failureRedirect: "/login",
             failureFlash: true,
         }),

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('../head.ejs') %>
+</head>
+
+<body>
+    <%- include('../header.ejs', {voter : true}) %>
+    <div class="page flex justify-center items-center">
+        <div class="h-full flex items-center justify-center">
+            <div>
+                <h2 class="text-xl font-bold text-center text-rose-500">
+                    <%= election.name %>
+                </h2>
+                <h1 class="text-4xl font-black text-center">
+                    Voter Login
+                </h1>
+                
+                <form action="voter-login" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="electionId" value="<%= election.id %>">
+                    <div class="flex flex-col gap-4 mt-4 w-[350px]">
+                        <div>
+                            <label for="voterId" class="text-lg font-bold">Voter ID</label>
+                            <input type="text" name="voterId" id="voterId" class="" required>
+                        </div>
+                        <div>
+                            <label for="password" class="text-lg font-bold">Password</label>
+                            <input type="password" name="password" id="password" class="" required>
+                        </div>
+                        <div>
+                            <button class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg w-full text-xl font-bold">Login</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <%- include('../footer.ejs') %>
+</body>
+<script>
+    tc.c("form input", "w-full border-2 border-stone-200 rounded-lg px-4 py-2 mt-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none text-xl font-bold")
+</script>
+<%- include('../foot.ejs') %>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('../head.ejs') %>
+</head>
+
+<body>
+    <%- include('../header.ejs', {voter : true}) %>
+    <div class="page">
+        <div class="flex items-center justify-between">
+            <h1 class="text-4xl font-black">
+                <%= election.name %>
+            </h1>
+        </div>
+        <br>
+        <br>
+        <p class="text-stone-200 text-lg">
+            <% if (election.status == 1) { %>
+                Welcome to the voting page for <b><%= election.name %>.</b>
+                <br>
+                This election has <b><%= election.questions.length %> question<% if (election.questions.length > 1){ %>s<% } %>.</b>
+                <br>
+                <br>
+                Vote on your preferred option for each question.
+                <br>
+                <br>
+                <b>NOTE:</b> You can only vote once.
+                <br>
+            <% } else if (election.status == 2) { %>
+                <b>This election has ended.</b>
+            <% } %>
+        </p>
+        <br>
+        <br>
+        <form action="/<%= election.id %>" method="POST" class="flex flex-col gap-8">
+            <% for (var i = 0; i < election.questions.length; i++) { %>
+                <div class="flex flex-col gap-2">
+                    <div class="text-2xl font-bold">
+                        <span class="text-rose-500">
+                            Q<%= i + 1 %>.
+                        </span>
+                        <%= election.questions[i].question %>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <% for (var j = 0; j < election.questions[i].options.length; j++) { %>
+                            <div class="flex items-center gap-2">
+                                <input type="radio" name="question_<%= election.questions[i].id %>" value="<%= election.questions[i].options[j].id %>" id="question_<%= election.questions[i].id %>_<%= election.questions[i].options[j].id %>" required>
+                                <label for="question_<%= election.questions[i].id %>_<%= election.questions[i].options[j].id %>">
+                                    <%= election.questions[i].options[j].option %>
+                                </label>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+        </form>  
+    </div>
+    <%- include('../footer.ejs') %>
+</body>
+<%- include('../foot.ejs') %>
+</html>

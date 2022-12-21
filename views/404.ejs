@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('head.ejs') %>
+</head>
+
+<body>
+    <%- include('header.ejs') %>
+    <div class="page">
+        <div class="flex h-[500px] items-center">
+            <div class="shrink-0">
+                <h1 class="text-6xl font-black">
+                    <span class="text-rose-500">
+                        404
+                    </span>
+                    not found.
+                </h1>
+                <p class="mt-4 text-lg text-stone-300">
+                    Looks like you're lost. <br>
+                    The page you're looking for doesn't exist.
+                </p>
+                
+            </div>
+            <div class="text-2xl font-bold flex flex-col items-center justify-center gap-4 w-full">
+                <a href="/" class="bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg">
+                    Back to home
+                </a>
+            </div>
+        </div>
+    </div>
+    <%- include('footer.ejs') %>
+</body>
+<%- include('foot.ejs') %>
+</html>

@@ -1,7 +1,7 @@
 const express = require("express");
 const csrf = require("tiny-csrf");
 const app = express();
-const { Admin } = require("../models");
+const { Admin, Voter, Election } = require("../models");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 const moment = require("moment");
 
-const csrfToken = process.env.CSRF_TOKEN || "this_should_be_32_character_long";
+const csrfToken = process.env.CSRF_TOKEN || "okay_riddhi_be_in_character_haan";
 const sessionKey =
     process.env.SESSION_KEY || "my-super-secret-key-21728172615261562";
 
@@ -71,6 +71,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
+    "AdminLocal",
     new LocalStrategy(
         {
             usernameField: "email",
@@ -104,12 +105,64 @@ passport.use(
     )
 );
 
+passport.use(
+    "VoterLocal",
+    new LocalStrategy(
+        {
+            usernameField: "voterId",
+            passwordField: "password",
+            passReqToCallback: true,
+        },
+        (req, voterId, password, done) => {
+            Voter.findOne({ where: { voterId } })
+                .then(async (user) => {
+                    if (!user) {
+                        return done(null, false, {
+                            message: "This Voter ID does not exist",
+                        });
+                    }
+                    const result = password === user.password;
+                    const election = await Election.findByPk(
+                        req.body.electionId
+                    );
+                    if (!election.status || election.status == 0) {
+                        return done(null, false, {
+                            message: "The election is not active",
+                        });
+                    }
+
+                    if (req.body.electionId != user.electionId) {
+                        return done(null, false, {
+                            message:
+                                "This Voter ID does not belong to this election",
+                        });
+                    }
+
+                    if (result) {
+                        return done(null, user);
+                    } else {
+                        return done(null, false, {
+                            message: "Incorrect password.",
+                        });
+                    }
+                })
+                .catch((err) => {
+                    done(err, null);
+                });
+        }
+    )
+);
+
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, {
+        id: user.id,
+        type: typeof user.voterId === "undefined" ? "Admin" : "Voter",
+    });
 });
 
-passport.deserializeUser((id, done) => {
-    Admin.findByPk(id)
+passport.deserializeUser((u, done) => {
+    (u.type === "Admin" ? Admin : Voter)
+        .findByPk(u.id)
         .then((user) => {
             done(null, user);
         })

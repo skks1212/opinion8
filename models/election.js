@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Election extends Model {
         /**
@@ -34,6 +34,69 @@ module.exports = (sequelize, DataTypes) => {
                 console.log(error);
                 return [];
             }
+        }
+
+        static async getElectionInfo(id) {
+            return await this.findOne({
+                where: {
+                    [isNaN(id) ? "customUrl" : "id"]: id,
+                    [Op.or]: [
+                        {
+                            status: 1,
+                        },
+                        {
+                            status: 2,
+                        },
+                    ],
+                },
+            });
+        }
+
+        static async getElectionInfoForVoter(id, vId) {
+            const election = await this.findOne({
+                where: {
+                    [isNaN(id) ? "customUrl" : "id"]: id,
+                    [Op.or]: [
+                        {
+                            status: 1,
+                        },
+                        {
+                            status: 2,
+                        },
+                    ],
+                },
+                include: [
+                    {
+                        model: sequelize.models.Question,
+                        as: "questions",
+                        order: [["createdAt", "ASC"]],
+                        include: [
+                            {
+                                model: sequelize.models.Option,
+                                as: "options",
+                                order: [["createdAt", "ASC"]],
+                            },
+                        ],
+                    },
+                    {
+                        model: sequelize.models.Voter,
+                        as: "voters",
+                        order: [["createdAt", "ASC"]],
+                    },
+                ],
+            });
+
+            const voter = await sequelize.models.Voter.findOne({
+                where: {
+                    voterId: vId,
+                    electionId: election.id,
+                },
+            });
+
+            if (!voter) {
+                throw { errors: [{ message: "Election not found" }] };
+            }
+            return election;
         }
 
         static getElection(id, adminId) {
@@ -187,8 +250,8 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 validate: {
                     is: {
-                        args: /^[a-zA-Z0-9-]+$/,
-                        msg: "Custom URL can only contain letters, numbers and hyphens",
+                        args: /^[a-z-]+$/,
+                        msg: "Custom URL can only contain lowercase letters and hyphens",
                     },
                 },
             },
