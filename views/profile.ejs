@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('head.ejs') %>
+</head>
+
+<body>
+    <%- include('header.ejs') %>
+    <div class="page">
+        <div class="flex items-center justify-between">
+            <h1 class="text-4xl font-black">
+                <%= user.name %>
+            </h1>
+        </div>
+        <br>
+        <br>
+        <p>
+            Joined on: <%= moment(user.createdAt).format("Do MMMM, YYYY") %>
+            <br>
+            Email: <%= user.email %>
+        </p>
+        <br>
+        <br>
+        <h2 class="text-2xl font-bold">
+            Change Password
+        </h2>
+        <br>
+        <br>
+        <form action="/profile" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="flex flex-col">
+                <label for="password">New Password</label>
+                <input type="password" name="password" id="password">
+            </div>
+            <br>
+            <div class="flex flex-col">
+                <label for="password2">Confirm New Password</label>
+                <input type="password" name="password2" id="password2">
+            </div>
+            <br>
+            <button class="bg-rose-600 hover:bg-rose-700 px-3 py-2 rounded-lg text-black font-bold">
+                <i class="far fa-pen mr-1"></i>
+                Change Password
+            </button>
+    </div>
+    <%- include('footer.ejs') %>
+    <script>
+        tc.c(".input-button", "bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg text-xl font-bold")
+        tc.c("input", "w-full border-2 border-stone-200 rounded-lg px-4 py-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none text-xl font-bold mt-2")
+    </script>
+</body>
+<%- include('foot.ejs') %>
+</html>

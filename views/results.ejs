@@ -1,0 +1,52 @@
+<br>
+<br>
+<script>
+    let myChart, options;
+</script>
+<div class="grid grid-cols-2 gap-4">
+    <% votes.forEach((question, i) => {
+        %>
+        <div class="border border-stone-800 rounded-lg p-4 flex flex-col justify-between">
+            <h2 class="text-2xl font-bold">Q<%= i + 1 %>. <%= question.question %></h2>
+            <br>
+            <div id="chart_<%= question.id %>" class="h-[400px] w-[460px]">
+            </div>
+        </div>
+        <script>
+            myChart = echarts.init(document.getElementById('chart_<%= question.id %>'), 'dark');
+            options = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                },
+                series: [
+                    {
+                        name: 'Votes',
+                        type: 'pie',
+                        radius: '60%',
+                        data: [
+                            <% question.options.forEach((option, j) => {
+                                %>
+                                {value: <%= option.votes.length %>, name: '<%= option.option %>'},
+                                <% }); %>
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ],
+                backgroundColor: 'black',
+            };
+            myChart.setOption(options);
+        </script>
+        <%
+    }); %>
+</div>
+

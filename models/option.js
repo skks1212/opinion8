@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
                 as: "question",
                 onDelete: "CASCADE",
             });
+            Option.hasMany(models.Vote, {
+                foreignKey: "optionId",
+                as: "votes",
+            });
         }
 
         static async createOption({ option }, questionId, adminId) {

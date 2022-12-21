@@ -16,6 +16,11 @@
         <br>
         <br>
         <p class="text-stone-200 text-lg">
+            <% if (votes && votes.length > 0) { %>
+                <b class="text-green-400">Thank you for your vote!</b>
+                <br>
+                <br>
+            <% } else { %>
             <% if (election.status == 1) { %>
                 Welcome to the voting page for <b><%= election.name %>.</b>
                 <br>
@@ -27,13 +32,28 @@
                 <br>
                 <b>NOTE:</b> You can only vote once.
                 <br>
-            <% } else if (election.status == 2) { %>
+            <% }}
+            if (election.status == 2) { %>
                 <b>This election has ended.</b>
             <% } %>
         </p>
         <br>
         <br>
+        <% if (election.status == 2) { %>
+            <h2 class="text-2xl font-bold">
+                Results
+            </h2>
+            <%- include('../results.ejs', {votes: results}) %>
+            <br>
+            <br>
+            <h2 class="text-2xl font-bold">
+                Your Vote
+            </h2>
+            <br>
+            <br>
+        <% } %> 
         <form action="/<%= election.id %>" method="POST" class="flex flex-col gap-8">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <% for (var i = 0; i < election.questions.length; i++) { %>
                 <div class="flex flex-col gap-2">
                     <div class="text-2xl font-bold">
@@ -42,17 +62,25 @@
                         </span>
                         <%= election.questions[i].question %>
                     </div>
-                    <div class="flex flex-col gap-2">
+                    <%= election.questions[i].description %>
+                    <div class="flex flex-col gap-2 mt-4">
                         <% for (var j = 0; j < election.questions[i].options.length; j++) { %>
                             <div class="flex items-center gap-2">
                                 <input type="radio" name="question_<%= election.questions[i].id %>" value="<%= election.questions[i].options[j].id %>" id="question_<%= election.questions[i].id %>_<%= election.questions[i].options[j].id %>" required>
                                 <label for="question_<%= election.questions[i].id %>_<%= election.questions[i].options[j].id %>">
-                                    <%= election.questions[i].options[j].option %>
+                                    <span class="<% if (votes?.find(v=>v.optionId == election.questions[i].options[j].id)) { %>text-green-500<% } %>">
+                                        <%= election.questions[i].options[j].option %>
+                                    </span>
                                 </label>
                             </div>
                         <% } %>
                     </div>
                 </div>
+            <% } %>
+            <% if (!votes || votes.length == 0) { %>
+            <button class="w-full bg-rose-600 hover:bg-rose-700 px-5 py-2 rounded-lg text-black font-bold text-center">
+                Submit
+            </button>
             <% } %>
         </form>  
     </div>

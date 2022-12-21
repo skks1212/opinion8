@@ -1,4 +1,4 @@
-const { Election } = require("../../models");
+const { Election, Vote } = require("../../models");
 const ensureLoggedIn = require("../utils/ensureLoggedIn");
 const { usedRoutes } = require("../utils/urls");
 
@@ -27,10 +27,13 @@ module.exports = (app) => {
     app.get("/elections/:id", ensureLoggedIn(), async (request, response) => {
         const { id } = request.params;
         const election = await Election.getElection(id, request.user.id);
+        const votes = await Vote.getResults(id, request.user.id);
+        console.log(votes);
         response.render("election", {
             title: election.name,
             csrfToken: request.csrfToken(),
             election,
+            votes,
         });
     });
 

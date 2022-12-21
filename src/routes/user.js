@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { Admin } = require("../../models");
+const ensureLoggedIn = require("../utils/ensureLoggedIn");
 module.exports = function (app, passport) {
     const saltRounds = 10;
 
@@ -34,6 +35,14 @@ module.exports = function (app, passport) {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         try {
+            if (password.length < 8) {
+                request.flash(
+                    "error",
+                    "Password must be at least 8 characters"
+                );
+                response.redirect("register");
+                return;
+            }
             if (password !== password2) {
                 request.flash("error", "Passwords do not match");
                 response.redirect("register");
@@ -67,5 +76,50 @@ module.exports = function (app, passport) {
             }
             response.redirect("/");
         });
+    });
+
+    app.get("/profile", ensureLoggedIn(), (request, response) => {
+        response.render("profile", {
+            csrfToken: request.csrfToken(),
+            title: "Profile",
+        });
+    });
+
+    app.post("/profile", ensureLoggedIn(), async (request, response) => {
+        const { password, password2 } = request.body;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        try {
+            if (password.length < 8) {
+                request.flash(
+                    "error",
+                    "Password must be at least 8 characters"
+                );
+                response.redirect("profile");
+                return;
+            }
+            if (password !== password2) {
+                request.flash("error", "Passwords do not match");
+                response.redirect("profile");
+                return;
+            }
+            const user = await Admin.updatePassword(
+                hashedPassword,
+                request.user.id
+            );
+            request.logIn(user, (err) => {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                }
+                request.flash("success", "Password updated");
+                response.redirect("profile");
+            });
+        } catch (error) {
+            console.log(error);
+            error?.errors?.forEach((element) => {
+                request.flash("error", element.message);
+            });
+            response.redirect("profile");
+        }
     });
 };

@@ -25,6 +25,15 @@ module.exports = (sequelize, DataTypes) => {
             }
             return await this.create(userCreds);
         }
+
+        static async updatePassword(password, id) {
+            const user = await this.findByPk(id);
+            if (!user) {
+                throw { errors: [{ message: "User does not exist" }] };
+            }
+            user.password = password;
+            return await user.save();
+        }
     }
     Admin.init(
         {
