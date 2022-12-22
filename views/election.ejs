@@ -57,13 +57,13 @@
     <div class="page">
         <div class="flex items-center justify-between mb-4">
             <h1 class="text-4xl font-black">
-                <a href="/<%= election.customUrl || election.id%>" target="_blank" class="flex items-center gap-3">
+                <a href="/e/<%= election.customUrl || election.id%>" target="_blank" class="flex items-center gap-3">
                     <%= election.name %> <i class="far fa-arrow-up-right-from-square text-base"></i>
                 </a> 
                 
             </h1>
             <div>
-                <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 font-bold" onclick="copyToClipboard('https:\/\/opinion8.shivankacker.me/<%= election.customUrl || election.id %>')">
+                <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 font-bold" onclick="copyToClipboard('https:\/\/opinion8.shivankacker.me/e/<%= election.customUrl || election.id %>')">
                     <i class="far fa-copy mr-1"></i>
                     Copy election link
                 </button>

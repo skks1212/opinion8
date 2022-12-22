@@ -3,7 +3,7 @@ const ensureLoggedIn = require("../utils/ensureLoggedIn");
 
 module.exports = (app, passport) => {
     app.get(
-        "/:election",
+        "/e/:election",
         ensureLoggedIn("Voter"),
         async (request, response) => {
             const { election } = request.params;
@@ -27,7 +27,7 @@ module.exports = (app, passport) => {
             });
         }
     );
-    app.get("/:election/voter-login", async (request, response) => {
+    app.get("/e/:election/voter-login", async (request, response) => {
         const { election } = request.params;
         const electionDetails = await Election.getElectionInfo(election);
         response.render("vote/voter-login", {
@@ -38,19 +38,19 @@ module.exports = (app, passport) => {
     });
 
     app.post(
-        "/:election/voter-login",
+        "/e/:election/voter-login",
         passport.authenticate("VoterLocal", {
             failureRedirect: "voter-login",
             failureFlash: true,
         }),
         (request, response) => {
             const { election } = request.params;
-            response.redirect(`/${election}`);
+            response.redirect(`/e/${election}`);
         }
     );
 
     app.post(
-        "/:election",
+        "/e/:election",
         ensureLoggedIn("Voter"),
         async (request, response) => {
             const { election } = request.params;
@@ -59,16 +59,15 @@ module.exports = (app, passport) => {
             const user = request.user;
             try {
                 const v = await Vote.createVotes(election, user.id, votes);
-                console.log(v);
             } catch (error) {
                 console.log(error);
                 error?.errors.forEach((err) => {
                     request.flash("error", err.message);
                 });
-                return response.redirect("/" + election);
+                return response.redirect("/e/" + election);
             }
             request.flash("success", "Vote cast successfully");
-            response.redirect("/" + election);
+            response.redirect("/e/" + election);
         }
     );
 };
