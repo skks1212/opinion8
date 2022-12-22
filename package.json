@@ -7,13 +7,18 @@
         "start": "DLR=true node index.js",
         "dev": "nodemon -e js,ejs",
         "pretest": "NODE_ENV=test npx sequelize-cli db:drop && NODE_ENV=test npx sequelize-cli db:create",
-        "test": "NODE_ENV=test jest --detectOpenHandles",
+        "test": "NODE_ENV=test DLR=true jest --detectOpenHandles",
         "prepare": "husky install"
     },
     "lint-staged": {
         "*.js": [
             "eslint",
             "prettier --write ."
+        ]
+    },
+    "jest": {
+        "setupFiles": [
+            "./src/utils/jest_helpers.js"
         ]
     },
     "author": "Shivank Kacker",

@@ -58,10 +58,10 @@ module.exports = (app, passport) => {
             const { _csrf, ...votes } = request.body;
             const user = request.user;
             try {
-                const v = await Vote.createVotes(election, user.id, votes);
+                await Vote.createVotes(election, user.id, votes);
             } catch (error) {
-                console.log(error);
-                error?.errors.forEach((err) => {
+                console.error(error);
+                error?.errors?.forEach((err) => {
                     request.flash("error", err.message);
                 });
                 return response.redirect("/e/" + election);

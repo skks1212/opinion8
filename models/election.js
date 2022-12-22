@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return elections;
             } catch (error) {
-                console.log(error);
+                //console.log(error);
                 return [];
             }
         }
@@ -128,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return election;
             } catch (error) {
-                console.log(error);
+                //console.log(error);
                 return null;
             }
         }
@@ -141,7 +141,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return election;
             } catch (error) {
-                console.log(error);
+                //console.log(error);
                 return null;
             }
         }
@@ -222,7 +222,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return election;
             } catch (error) {
-                console.log(error);
+                //console.log(error);
                 return null;
             }
         }
@@ -243,7 +243,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             customUrl: {
                 type: DataTypes.STRING,
-                allowNull: true,
                 unique: {
                     args: true,
                     msg: "Custom URL has already been taken",

@@ -22,8 +22,9 @@ module.exports = (sequelize, DataTypes) => {
 
         static async createVotes(electionId, voterId, votes) {
             const { Option, Election, Question } = sequelize.models;
-            const election = await Election.findByPk(electionId, {
+            const election = await Election.findOne({
                 where: {
+                    [isNaN(electionId) ? "customUrl" : "id"]: electionId,
                     [Op.or]: [{ status: 1 }, { status: 2 }],
                 },
             });
@@ -32,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
             }
 
             const existingVotes = await Vote.findAll({
-                where: { voterId },
+                where: { id: voterId },
             });
             if (existingVotes.length) {
                 throw { errors: [{ message: "Vote already cast" }] };
@@ -45,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
                 };
             });
             const allQuestions = await Question.findAll({
-                where: { electionId },
+                where: { electionId: election.id },
             });
             if (
                 questions.length !== allQuestions.length ||

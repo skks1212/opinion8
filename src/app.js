@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 const moment = require("moment");
 
-const csrfToken = process.env.CSRF_TOKEN || "okay_riddhi_be_in_character_haan";
+const csrfToken = process.env.CSRF_TOKEN || "this_should_be_32_character_long";
 const sessionKey =
     process.env.SESSION_KEY || "my-super-secret-key-21728172615261562";
 
@@ -39,27 +39,28 @@ if (process.env.DLR !== "true") {
         }, 100);
     });
     app.use(connectLiveReload());
-} else {
-    console.log("Live reload is disabled");
 }
 
-app.use(
-    session({
-        store: new SqliteStore({
-            client: db,
-            expired: {
-                clear: true,
-                intervalMs: 900000,
-            },
-        }),
-        secret: sessionKey,
-        cookie: {
-            maxAge: 24 * 60 * 60 * 1000,
+let sessionOptions = {
+    secret: sessionKey,
+    cookie: {
+        maxAge: 24 * 60 * 60 * 1000,
+    },
+    resave: false,
+    saveUninitialized: false,
+};
+
+if (process.env.NODE_ENV !== "test") {
+    sessionOptions.store = new SqliteStore({
+        client: db,
+        expired: {
+            clear: true,
+            intervalMs: 900000,
         },
-        resave: false,
-        saveUninitialized: false,
-    })
-);
+    });
+}
+
+app.use(session(sessionOptions));
 
 app.use(function (request, response, next) {
     response.locals.messages = request.flash();
@@ -181,6 +182,10 @@ app.get("/", (req, res) => {
     } else {
         res.render("index", { csrfToken: req.csrfToken() });
     }
+});
+
+app.get("/csrf", (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
 });
 
 module.exports = app;

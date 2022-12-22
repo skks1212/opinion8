@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
                 option,
                 questionId,
             });
-            console.log(newOption);
+            //console.log(newOption);
             return newOption;
         }
 

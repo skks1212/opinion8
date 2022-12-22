@@ -26,15 +26,19 @@ module.exports = (app) => {
 
     app.get("/elections/:id", ensureLoggedIn(), async (request, response) => {
         const { id } = request.params;
-        const election = await Election.getElection(id, request.user.id);
-        const votes = await Vote.getResults(id, request.user.id);
-        console.log(votes);
-        response.render("election", {
-            title: election.name,
-            csrfToken: request.csrfToken(),
-            election,
-            votes,
-        });
+        try {
+            const election = await Election.getElection(id, request.user.id);
+            const votes = await Vote.getResults(id, request.user.id);
+            response.render("election", {
+                title: election.name,
+                csrfToken: request.csrfToken(),
+                election,
+                votes,
+            });
+        } catch (error) {
+            //console.log(error);
+            response.redirect("/elections");
+        }
     });
 
     app.patch("/elections/:id", ensureLoggedIn(), async (request, response) => {
@@ -58,8 +62,7 @@ module.exports = (app) => {
                 response.redirect(`/elections/${id}`);
             }
         } catch (error) {
-            console.log(error);
-            error.errors.forEach((element) => {
+            error?.errors?.forEach((element) => {
                 request.flash("error", element.message);
             });
             if (request.accepts("json")) {
@@ -85,11 +88,16 @@ module.exports = (app) => {
                     response.redirect(`/elections/${id}`);
                 }
             } catch (error) {
-                console.log(error);
-                error.errors.forEach((element) => {
-                    request.flash("error", element.message);
-                });
-                response.redirect("/");
+                if (request.accepts("json")) {
+                    response
+                        .status(400)
+                        .json({ success: false, errors: error.errors });
+                } else {
+                    error.errors.forEach((element) => {
+                        request.flash("error", element.message);
+                    });
+                    response.redirect("/");
+                }
             }
         }
     );
