@@ -36,7 +36,7 @@ module.exports = (app) => {
                 votes,
             });
         } catch (error) {
-            //console.log(error);
+            console.error(error);
             response.redirect("/elections");
         }
     });
@@ -98,6 +98,28 @@ module.exports = (app) => {
                     });
                     response.redirect("/");
                 }
+            }
+        }
+    );
+
+    app.get(
+        "/elections/:id/preview",
+        ensureLoggedIn(),
+        async (request, response) => {
+            const { id } = request.params;
+            try {
+                const election = await Election.getElection(
+                    id,
+                    request.user.id
+                );
+                response.render("preview", {
+                    title: election.name,
+                    csrfToken: request.csrfToken(),
+                    election,
+                });
+            } catch (error) {
+                console.error(error);
+                response.redirect("/elections");
             }
         }
     );

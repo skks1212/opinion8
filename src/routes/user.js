@@ -115,7 +115,7 @@ module.exports = function (app, passport) {
                 response.redirect("profile");
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             error?.errors?.forEach((element) => {
                 request.flash("error", element.message);
             });

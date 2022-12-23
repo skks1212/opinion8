@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html class="bg-black text-stone-100">
+
+<head>
+    <%- include('head.ejs') %>
+</head>
+
+<body>
+    <%- include('header.ejs') %>
+    <div class="page">
+        <div class="flex items-center justify-between">
+            <h1 class="text-4xl font-black">
+                <%= election.name %>
+            </h1>
+        </div>
+        <br>
+        <br>
+        <p class="text-stone-200 text-lg">
+            Preview Mode
+        </p>
+        <br>
+        <br>
+        <div class="flex flex-col gap-8">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <% for (var i = 0; i < election.questions.length; i++) { %>
+                <div class="flex flex-col gap-2">
+                    <div class="text-2xl font-bold">
+                        <span class="text-rose-500">
+                            Q<%= i + 1 %>.
+                        </span>
+                        <%= election.questions[i].question %>
+                    </div>
+                    <%= election.questions[i].description %>
+                    <div class="flex flex-col gap-2 mt-4">
+                        <% for (var j = 0; j < election.questions[i].options.length; j++) { %>
+                            <div class="flex items-center gap-2">
+                                <input type="radio" name="question_<%= election.questions[i].id %>" value="<%= election.questions[i].options[j].id %>" id="question_<%= election.questions[i].id %>_<%= election.questions[i].options[j].id %>" required>
+                                <label for="question_<%= election.questions[i].id %>_<%= election.questions[i].options[j].id %>">
+                                    <span class="">
+                                        <%= election.questions[i].options[j].option %>
+                                    </span>
+                                </label>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+        </div>  
+    </div>
+    <%- include('footer.ejs') %>
+</body>
+<%- include('foot.ejs') %>
+</html>

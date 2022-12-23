@@ -22,13 +22,34 @@
     <%= voters.length %> voters
     <br>
     <br>
+    <% if (typeof readonly !== 'undefined' && readonly) { %>
+        <table class="w-full overflow-hidden rounded-xl">
+            <thead>
+                <tr class="bg-stone-900">
+                    <th class="p-2">No.</th>
+                    <th class="p-2">Voter ID</th>
+                    <th class="p-2">Password</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i = 0; i < voters.length; i++) { %>
+                    <tr class="<%- i % 2 === 0 ? "bg-stone-900/40" : "bg-stone-900/60" %>">
+                        <td class="p-2"><%= i + 1 %></td>
+                        <td class="p-2"><%= voters[i].voterId %></td>
+                        <td class="p-2"><%= voters[i].password %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    <% }else{ %>
     <% for (let i = 0; i < voters.length; i++) { %>
     <%- include('voter', { voter: voters[i], index: i }) %>
     <% } %>
     <form action="/elections/<%= election.id %>/voters" class="flex items-center gap-2" method="post">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <input type="text" name="voterId" placeholder="Voter ID">
-        <input type="text" name="password" placeholder="Password">
+        <input type="text" name="voterId" placeholder="Voter ID" required>
+        <input type="text" name="password" placeholder="Password" required>
         <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 text-xl font-bold">Add</button>
     </form>
+    <% } %>
 </div>

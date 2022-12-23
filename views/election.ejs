@@ -59,13 +59,15 @@
             <h1 class="text-4xl font-black">
                 <a href="/e/<%= election.customUrl || election.id%>" target="_blank" class="flex items-center gap-3">
                     <%= election.name %> <i class="far fa-arrow-up-right-from-square text-base"></i>
-                </a> 
-                
+                </a>
             </h1>
             <div>
+                <a class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 font-bold" href="/elections/<%= election.id%>/preview">
+                    <i class="far fa-eye"></i> Preview
+                </a>
+                &nbsp;
                 <button class="border border-rose-600 text-rose-600 hover:bg-rose-500/30 px-5 py-2 rounded-lg shrink-0 font-bold" onclick="copyToClipboard('https:\/\/opinion8.shivankacker.me/e/<%= election.customUrl || election.id %>')">
                     <i class="far fa-copy mr-1"></i>
-                    Copy election link
                 </button>
                 <% if (!election.status || election.status == 0) { %>
                     <button class="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg text-black font-bold" onclick="updateElection({status : 1})">
@@ -98,7 +100,7 @@
         <br>
         <br>
         <% } else { %>
-            <div class="h-[300px] justify-center items-center flex flex-col gap-4">
+            <div class="h-[150px] justify-center items-center flex flex-col gap-4">
             <% if (election.status == 1) { %>
                 <h3 class="text-2xl text-green-500">
                     <i class="fas fa-circle fa-fade"></i>
@@ -119,12 +121,14 @@
         <%- include('questions/questions.ejs', {questions: election.questions}) %>
         <br>
         <br>
+        <% } else { %>
         <h2 class="text-2xl font-bold">
             Voters
         </h2>
         <br>
-        <%- include('voters.ejs', {voters: election.voters}) %>
-        <% } else { %>
+        <%- include('voters.ejs', {voters: election.voters, readonly: election.status && election.status > 0}) %>
+        <br>
+        <br>
         <h2 class="text-2xl font-bold">
             Results
         </h2>
@@ -144,7 +148,7 @@
 </body>
 <script>
     tc.c(".input-button", "bg-rose-600 text-black hover:bg-rose-700 hover:text-black px-5 py-2 rounded-lg text-xl font-bold")
-    tc.c("input", "w-full border-2 border-stone-200 rounded-lg px-4 py-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none text-xl font-bold")
+    tc.c("input", "w-full border-2 rounded-lg px-4 py-2 bg-stone-900 text-stone-100 border-stone-800 focus:border-rose-500 focus:outline-none text-xl font-bold")
 </script>
 <%- include('foot.ejs') %>
 </html>

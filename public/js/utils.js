@@ -23,6 +23,7 @@ const hideMessage = () => {
     message.classList.add("-bottom-full");
 };
 const showMessage = (messages, type) => {
+    console.log(messages);
     const errorClasses = ["bg-red-500/40", "border-red-600"];
     const successClasses = ["bg-green-500/40", "border-green-600"];
     const message = document.getElementById("message");

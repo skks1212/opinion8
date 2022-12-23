@@ -31,6 +31,11 @@ app.use(flash());
 
 app.use(express.static(path.join(__dirname, "../public")));
 
+if (process.env.NODE_ENV === "test") {
+    var console = {};
+    console.log = function () {};
+}
+
 if (process.env.DLR !== "true") {
     const liveReloadServer = livereload.createServer();
     liveReloadServer.server.once("connection", () => {

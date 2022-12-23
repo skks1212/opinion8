@@ -8,7 +8,7 @@ module.exports = (app) => {
         try {
             await Voter.createVoter({ voterId, password }, id, req.user.id);
         } catch (error) {
-            //console.log(error);
+            console.error(error);
             error.errors?.forEach((element) => {
                 req.flash("error", element.message);
             });
@@ -28,7 +28,7 @@ module.exports = (app) => {
                     req.user.id
                 );
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 error.errors?.forEach((element) => {
                     req.flash("error", element.message);
                 });
@@ -45,7 +45,7 @@ module.exports = (app) => {
                 await Voter.deleteVoter(vId, req.user.id);
                 res.json({ success: true });
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 res.status(400).json({ success: false, errors: error.errors });
             }
         }

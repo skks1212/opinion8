@@ -18,7 +18,7 @@ describe("Handle all voter features", function () {
             await db.sequelize.close();
             await server.close();
         } catch (error) {
-            console.log(error);
+            console.warn(error);
         }
     });
     test("Visit Election", async () => {

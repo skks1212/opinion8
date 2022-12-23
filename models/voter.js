@@ -95,6 +95,7 @@ module.exports = (sequelize, DataTypes) => {
             const voterWithSameName = await Voter.findOne({
                 where: {
                     voterId,
+                    [Op.not]: [{ id }],
                     electionId: existingVoter.electionId,
                 },
             });

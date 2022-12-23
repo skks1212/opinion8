@@ -1,21 +1,28 @@
 <% if(messages) { %>
     <script>
+        window.addEventListener('load', () => {
+            
+        
         let preMessages = `<%- JSON.stringify(messages.error) %>`;
+        if(preMessages != ''){
+            
         preMessages = JSON.parse(preMessages);
+        
         preMessages = preMessages.map(message => {
             return { message };
         });
-        window.onload = () => {
-            showMessage(preMessages, 'error');
+        console.log(preMessages);
+        showMessage(preMessages, 'error');
         }
         preMessages = `<%- JSON.stringify(messages.success) %>`;
+        if(preMessages != ''){
         preMessages = JSON.parse(preMessages);
         preMessages = preMessages.map(message => {
             return { message };
         });
-        window.onload = () => {
             showMessage(preMessages, 'success');
         }
+    });
     </script>
 <% } %>
      

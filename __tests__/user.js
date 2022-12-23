@@ -16,7 +16,7 @@ describe("Handle all user features", function () {
             await db.sequelize.close();
             await server.close();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     });
 

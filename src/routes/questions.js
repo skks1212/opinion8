@@ -50,7 +50,7 @@ module.exports = (app) => {
                 await Question.deleteQuestion(questionId, request.user.id);
                 response.json({ success: true });
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 error.errors?.forEach((element) => {
                     request.flash("error", element.message);
                 });
@@ -76,11 +76,12 @@ module.exports = (app) => {
                     questionId,
                     request.user.id
                 );
+                request.flash("success", "Option created successfully");
             } catch (error) {
                 error.errors?.forEach((element) => {
                     request.flash("error", element.message);
                 });
-                //console.log(error);
+                console.error(error);
             }
             response.redirect(`/elections/${id}`);
         }
@@ -114,7 +115,7 @@ module.exports = (app) => {
                 await Option.deleteOption(optionId, request.user.id);
                 response.json({ success: true });
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 error.errors?.forEach((element) => {
                     request.flash("error", element.message);
                 });

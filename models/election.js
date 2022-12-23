@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return elections;
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 return [];
             }
         }
@@ -128,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return election;
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 return null;
             }
         }
@@ -141,7 +141,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return election;
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 return null;
             }
         }
@@ -222,7 +222,7 @@ module.exports = (sequelize, DataTypes) => {
                 });
                 return election;
             } catch (error) {
-                //console.log(error);
+                console.error(error);
                 return null;
             }
         }
