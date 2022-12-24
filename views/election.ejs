@@ -23,6 +23,7 @@
                 }else{
                     const json = await res.json();
                     showMessage(json.errors, 'error');
+                    setTimeout(() => location.reload(), 2000);
                 }
             })
         }
