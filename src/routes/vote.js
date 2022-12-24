@@ -30,6 +30,10 @@ module.exports = (app, passport) => {
     app.get("/e/:election/voter-login", async (request, response) => {
         const { election } = request.params;
         const electionDetails = await Election.getElectionInfo(election);
+        if (!electionDetails) {
+            request.flash("error", "Election not found");
+            return response.status(404).render("404");
+        }
         response.render("vote/voter-login", {
             csrfToken: request.csrfToken(),
             election: electionDetails,

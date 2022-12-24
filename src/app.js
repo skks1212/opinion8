@@ -193,4 +193,8 @@ app.get("/csrf", (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
 
+app.get("*", function (req, res) {
+    res.status(404).render("404");
+});
+
 module.exports = app;

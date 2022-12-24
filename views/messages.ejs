@@ -1,3 +1,4 @@
+<% if (typeof messages == "undefined") { messages = null;} %>
 <% if(messages) { %>
     <script>
         window.addEventListener('load', () => {
@@ -11,7 +12,6 @@
         preMessages = preMessages.map(message => {
             return { message };
         });
-        console.log(preMessages);
         showMessage(preMessages, 'error');
         }
         preMessages = `<%- JSON.stringify(messages.success) %>`;

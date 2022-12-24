@@ -134,7 +134,7 @@
             Results
         </h2>
         <%- include('results.ejs') %>
-        <% } %>
+        
         <br>
         <br>
         <h2 class="text-2xl font-bold">
@@ -142,6 +142,7 @@
         </h2>
         <br>
         <%- include('voters.ejs', {voters: election.voters, readonly: true}) %>
+        <% } %>
         <br>
         <br>
         <br>

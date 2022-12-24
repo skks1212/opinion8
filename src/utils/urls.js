@@ -15,7 +15,7 @@ const usedRoutes = (app) => {
         const path = paths[1];
         if (
             !used.includes(path) &&
-            path.startsWith(":") == false &&
+            path?.startsWith(":") == false &&
             path != ""
         ) {
             used.push(path);
